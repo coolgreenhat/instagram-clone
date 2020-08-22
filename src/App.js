@@ -5,7 +5,8 @@ import { db, auth }  from "./firebase";
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';  
 import { Button, Input } from '@material-ui/core';
-
+import ImageUpload from './imageUpload/ImageUpload';
+import InstgramEmbed from "react-instagram-embed";
 
 function getModalStyle() {
   const top = 50;
@@ -65,7 +66,7 @@ function App() {
   }, [user, username]);
 
   useEffect(() => {
-    db.collection('posts').onSnapshot(snapshot => {
+    db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
       // everytime a new post is added
       setPosts(snapshot.docs.map(doc => ({
         id: doc.id,
@@ -99,12 +100,9 @@ function App() {
 
 
   return (
-    <div className="app">
+    <div className="app">  
 
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Modal open={open} onClose={() => setOpen(false)}>
       <div style={modalStyle} className={classes.paper}>
         <form className="app__signup">
         <center>
@@ -178,8 +176,6 @@ function App() {
         className="app__headerImage"
         src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" 
         alt=""/>
-      </div>
-
 
       {user ? (
         <Button onClick={() => auth.signOut()}>Logout</Button>
@@ -189,18 +185,44 @@ function App() {
           <Button onClick={() => setOpen(true)}>Sign Up</Button>
         </div>
       )}
+      </div>
       {/* Posts */}
        
-      {
-        posts.map(({id, post}) => (
-          <Post 
-          key={id}
-          username={post.username}
-          caption={post.caption}
-          imageUrl={post.imageUrl}
-          />
-          ))
-      }
+      <div className="app__posts">
+        <div className="app__postsLeft">
+          {
+            posts.map(({id, post}) => (
+              <Post 
+              key={id}
+              postId={id}
+              user={user}
+              username={post.username}
+              caption={post.caption}
+              imageUrl={post.imageUrl}
+              />
+              ))
+          }
+        </div>
+        <div className="app__postsRight">
+          <InstgramEmbed
+          url="https://www.instagram.com/p/CEJYG4Ul3uT/"
+          maxWidth={320}
+          hideCaption={false}
+          containerTagName='div'
+          protocol=''
+          injectScript
+          onLoading={() => {}}
+          onSuccess={() => {}}
+          onAfterRender={() => {}}
+          onFailure={() => {}}
+        />
+        </div>
+
+      </div>
+      {user && 
+        <ImageUpload username={user.displayName} />
+        }  
+      
     </div>
   );
 }
