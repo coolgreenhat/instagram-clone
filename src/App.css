@@ -1,0 +1,19 @@
+* {
+  margin: 0;
+}
+
+.app {
+  background-color: rgb(215, 250, 248);
+}
+
+.app__header {
+  background-color: white;
+  padding: 20px;
+  object-fit: contain;
+  border-bottom: 1px solid lightgray;
+}
+
+.app__signup {
+  display: flex;
+  flex-direction: column;
+}
